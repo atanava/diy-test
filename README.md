@@ -6,5 +6,7 @@
 
 Рефакторить `ViewModelsConverter#toTechModel` можно, но смысл менять нельзя. Этот метод используется в проекте отдельно.
 
-Решение присылать в скайп-телеграм - ссылка на ваш `ViewModelsConverter`.
+Решение - ссылку на вашу реализацию **класса `ViewModelsConverter`** присылать на:
+Skype: grigory.kislin
+Telegram: @gkislin
 
