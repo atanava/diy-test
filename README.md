@@ -6,6 +6,6 @@
 
 Рефакторить `ViewModelsConverter#toTechModel` можно, но смысл менять нельзя. Этот метод используется в проекте отдельно.
 
-Решение - ссылку на вашу реализацию **класса `ViewModelsConverter`** присылать в:   
+Решение - ссылку на вашу реализацию **класса `ViewModelsConverter` + ваш email** в JavaOps присылать в:   
 Skype: grigory.kislin / Telegram: @gkislin
 
