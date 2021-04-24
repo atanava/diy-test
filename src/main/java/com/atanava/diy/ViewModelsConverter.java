@@ -39,29 +39,37 @@ public class ViewModelsConverter {
             throw new IllegalArgumentException("First element must be ROOT");
         }
 
-        for (Map.Entry<String, List<RowModel>> entry : convertToMap(source).entrySet()) {
-            RootModelTo rootModelTo = new RootModelTo();
-            rootModelTo.rootCode = entry.getKey();
-            rootModelTo.techList = new ArrayList<>();
-            rootModelTo.techList.add(toTechModel(entry.getValue()));
-            roots.add(rootModelTo);
-        }
+        convertToMap(source)
+                .forEach((key, value) -> {
+                    RootModelTo rootModelTo = new RootModelTo();
+                    rootModelTo.rootCode = key;
+                    rootModelTo.techList = new ArrayList<>();
+                    roots.add(rootModelTo);
+                    value.forEach(list -> rootModelTo.techList.add(toTechModel(list)));
+                });
 
         return roots;
     }
 
-    private static Map<String, List<RowModel>> convertToMap(List<RowModel> source) {
-        Map<String, List<RowModel>> rootsMap = new HashMap<>();
-        List<RowModel> techs = null;
+
+    private static NavigableMap<String, Deque<List<RowModel>>> convertToMap(List<RowModel> source) {
+
+        NavigableMap<String, Deque<List<RowModel>>> roots = new TreeMap<>();
+        Deque<List<RowModel>> techs;
 
         for (RowModel rowModel : source) {
             if (rowModel.positionType.equals(PositionType.ROOT)) {
-                techs = new ArrayList<>();
-                rootsMap.put(rowModel.anyCode, techs);
+                techs = new LinkedList<>();
+                roots.put(rowModel.anyCode, techs);
+
+            } else if (rowModel.positionType.equals(PositionType.TECHNOLOGY)) {
+                roots.get(roots.lastKey()).add(new LinkedList<>());
+                roots.get(roots.lastKey()).getLast().add(rowModel);
+
             } else {
-                techs.add(rowModel);
+                roots.get(roots.lastKey()).getLast().add(rowModel);
             }
         }
-        return rootsMap;
+        return roots;
     }
 }

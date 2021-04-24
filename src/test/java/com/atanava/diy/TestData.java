@@ -95,11 +95,11 @@ public class TestData {
 
         rootModelTo2 = new RootModelTo();
         rootModelTo2.rootCode = "root2";
-        rootModelTo2.techList = List.of(techModelTo2);
+        rootModelTo2.techList = List.of(techModelTo1, techModelTo2);
 
         rootModelTo3 = new RootModelTo();
         rootModelTo3.rootCode = "root3";
-        rootModelTo3.techList = List.of(techModelTo3);
+        rootModelTo3.techList = List.of(techModelTo1, techModelTo2, techModelTo3);
 
 
     }
@@ -109,8 +109,9 @@ public class TestData {
     }
 
     static List<RowModel> getToRootModelsInput() {
-        return List.of(rowRoot1, rowTech1, rowMat1, rowRoot2, rowTech2, rowMat1, rowMat2,
-                rowRoot3, rowTech3, rowMat1, rowMat2, rowMat3);
+        return List.of(rowRoot1, rowTech1, rowMat1,
+                rowRoot2, rowTech1, rowMat1, rowTech2, rowMat1, rowMat2,
+                rowRoot3, rowTech1, rowMat1, rowTech2, rowMat1, rowMat2, rowTech3, rowMat1, rowMat2, rowMat3);
     }
 
     static List<RootModelTo> getExpectedRootModels() {
