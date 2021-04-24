@@ -1,4 +1,4 @@
-package to;
+package com.atanava.diy.to;
 
 import java.util.List;
 
