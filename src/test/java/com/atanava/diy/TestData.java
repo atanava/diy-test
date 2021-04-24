@@ -90,19 +90,30 @@ public class TestData {
 
 
         rootModelTo1 = new RootModelTo();
+        rootModelTo1.rootCode = "root1";
         rootModelTo1.techList = List.of(techModelTo1);
 
         rootModelTo2 = new RootModelTo();
+        rootModelTo2.rootCode = "root2";
         rootModelTo2.techList = List.of(techModelTo2);
 
         rootModelTo3 = new RootModelTo();
+        rootModelTo3.rootCode = "root3";
         rootModelTo3.techList = List.of(techModelTo3);
 
 
     }
 
-    static List<RowModel> getTechModelInput() {
+    static List<RowModel> getToTechModelInput() {
         return List.of(rowTech3, rowMat1, rowMat2, rowMat3);
     }
 
+    static List<RowModel> getToRootModelsInput() {
+        return List.of(rowRoot1, rowTech1, rowMat1, rowRoot2, rowTech2, rowMat1, rowMat2,
+                rowRoot3, rowTech3, rowMat1, rowMat2, rowMat3);
+    }
+
+    static List<RootModelTo> getExpectedRootModels() {
+        return List.of(rootModelTo1, rootModelTo2, rootModelTo3);
+    }
 }

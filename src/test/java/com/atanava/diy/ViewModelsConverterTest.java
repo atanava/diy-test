@@ -1,8 +1,10 @@
 package com.atanava.diy;
 
+import com.atanava.diy.to.RootModelTo;
 import com.atanava.diy.to.TechModelTo;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,10 +15,10 @@ class ViewModelsConverterTest {
 
     @Test
     void toTechModelTest() {
-        TechModelTo actual = toTechModel(getTechModelInput());
+        TechModelTo actual = toTechModel(getToTechModelInput());
         assertEquals(techModelTo3.techCode, actual.techCode);
 
-        for (int i = 0; i < actual.rowTos.size(); i++) {
+        for (int i = 0; i < techModelTo3.rowTos.size(); i++) {
             assertEquals(techModelTo3.rowTos.get(i).materialCode, actual.rowTos.get(i).materialCode);
         }
     }
@@ -33,5 +35,33 @@ class ViewModelsConverterTest {
 
     @Test
     void toRootModelsTest() {
+        List<RootModelTo> expected = getExpectedRootModels();
+        List<RootModelTo> actual = toRootModels(getToRootModelsInput());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i).rootCode, actual.get(i).rootCode);
+            List<TechModelTo> expectedTechs = expected.get(i).techList;
+            List<TechModelTo> actualTechs = actual.get(i).techList;
+
+            for (int j = 0; j < expectedTechs.size(); j++) {
+                TechModelTo expTech = expectedTechs.get(j);
+                TechModelTo actTech = actualTechs.get(j);
+                assertEquals(expTech.techCode, actTech.techCode);
+
+                for (int k = 0; k < expTech.rowTos.size(); k++) {
+                    assertEquals(expTech.rowTos.get(k).materialCode, actTech.rowTos.get(k).materialCode);
+                }
+            }
+        }
+    }
+
+    @Test
+    void toRootModelsWithEmptyInput() {
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(null));
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(Collections.emptyList()));
+    }
+
+    @Test
+    void toRootModelsWithWrongFirstElement() {
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowTech2, rowMat1, rowMat2)));
     }
 }
