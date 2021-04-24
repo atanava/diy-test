@@ -19,6 +19,7 @@ public class ViewModelsConverter {
                 case TECHNOLOGY -> {
                     if (result != null) throw new IllegalArgumentException();
                     result = new TechModelTo(rowModel.anyCode);
+                    result.rowTos = new ArrayList<>();
                 }
                 case MATERIAL -> {
                     if (result == null) throw new IllegalArgumentException();
