@@ -57,14 +57,12 @@ class ViewModelsConverterTest {
     @Test
     void toRootModelsWithEmptyInput() {
         assertThrows(IllegalArgumentException.class, () -> toRootModels(null));
-        assertThrows(IllegalArgumentException.class, () -> toRootModels(Collections.emptyList()));
+        assertIterableEquals(Collections.emptyList(), toRootModels(Collections.emptyList()));
     }
 
     @Test
     void toRootModelsWithWrongElementsOrder() {
         assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowTech2, rowMat1, rowMat2)));
-        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowRoot1, rowMat1, rowMat2)));
-        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowRoot1, rowTech1, rowTech2)));
         assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowMat1, rowRoot1, rowTech1)));
     }
 }

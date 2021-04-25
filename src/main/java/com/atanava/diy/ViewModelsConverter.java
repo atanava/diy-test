@@ -36,47 +36,41 @@ public class ViewModelsConverter {
         if (source == null) {
             throw new IllegalArgumentException("Source must not be null");
         } else if (source.isEmpty()) {
-            throw new IllegalArgumentException("Source must not be empty");
+            return roots;
         } else if (source.get(0).positionType != PositionType.ROOT) {
             throw new IllegalArgumentException("First element must be ROOT");
         }
 
-        RootModelTo rootModelTo = null;
-        RowModel previous = null;
-        List<RowModel> techAndMats = null;
+        List<RowModel> technologyAndMaterials = null;
+        TreeMap<String, List<List<RowModel>>> rootCodesTechnologiesAndMaterials = new TreeMap<>();
 
-        for (int i = 0; i < source.size(); i++) {
-            RowModel model = source.get(i);
-
+        for (RowModel model : source) {
             switch (model.positionType) {
                 case ROOT -> {
-                    if (previous != null && (previous.positionType == PositionType.ROOT || previous.positionType == PositionType.TECHNOLOGY)) {
-                        throw new IllegalArgumentException("Incorrect order of elements in source");
-                    }
-                    rootModelTo = new RootModelTo();
-                    rootModelTo.rootCode = model.anyCode;
-                    rootModelTo.techList = new ArrayList<>();
-                    roots.add(rootModelTo);
+                    rootCodesTechnologiesAndMaterials.put(model.anyCode, new ArrayList<>());
+                    technologyAndMaterials = null; // это можно убрать, если мы доверяем проверку очередности методу toTechModel
                 }
-                case TECHNOLOGY -> {
-                    if (previous == null || previous.positionType == PositionType.TECHNOLOGY) {
-                        throw new IllegalArgumentException("Incorrect order of elements in source");
+                case TECHNOLOGY, MATERIAL -> {
+                    if (model.positionType == PositionType.TECHNOLOGY) {
+                        technologyAndMaterials = new ArrayList<>();
+                        rootCodesTechnologiesAndMaterials
+                                .get(rootCodesTechnologiesAndMaterials.lastKey())
+                                .add(technologyAndMaterials);
                     }
-                    techAndMats = new ArrayList<>();
-                    techAndMats.add(model);
-                }
-                case MATERIAL -> {
-                    if (previous == null || previous.positionType == PositionType.ROOT) {
-                        throw new IllegalArgumentException("Incorrect order of elements in source");
-                    }
-                    techAndMats.add(model);
-                    if (i == source.size() - 1 || source.get(i + 1).positionType != PositionType.MATERIAL) {
-                        rootModelTo.techList.add(toTechModel(techAndMats));
-                    }
+                    if (technologyAndMaterials == null) // и это можно убрать, если мы доверяем проверку очередности методу toTechModel
+                        throw new  IllegalArgumentException("Incorrect elements order");
+                    technologyAndMaterials.add(model);
                 }
             }
-            previous = model;
         }
+        rootCodesTechnologiesAndMaterials
+                .forEach((key, value) -> {
+                    RootModelTo rootModelTo = new RootModelTo();
+                    rootModelTo.rootCode = key;
+                    rootModelTo.techList = new ArrayList<>();
+                    roots.add(rootModelTo);
+                    value.forEach(rowModels -> rootModelTo.techList.add(toTechModel(rowModels)));
+                });
 
         return roots;
     }
