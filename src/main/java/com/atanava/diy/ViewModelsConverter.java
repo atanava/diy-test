@@ -41,36 +41,40 @@ public class ViewModelsConverter {
             throw new IllegalArgumentException("First element must be ROOT");
         }
 
+        RootModelTo rootModelTo = null;
         List<RowModel> technologyAndMaterials = null;
-        TreeMap<String, List<List<RowModel>>> rootCodesTechnologiesAndMaterials = new TreeMap<>();
+        List<List<RowModel>> technologiesOfRoot = null;
 
         for (RowModel model : source) {
             switch (model.positionType) {
                 case ROOT -> {
-                    rootCodesTechnologiesAndMaterials.put(model.anyCode, new ArrayList<>());
+                    if (rootModelTo != null) {
+                        for (List<RowModel> rowModels : technologiesOfRoot)
+                            rootModelTo.techList.add(toTechModel(rowModels));
+                    }
+                    rootModelTo = new RootModelTo();
+                    rootModelTo.rootCode = model.anyCode;
+                    rootModelTo.techList = new ArrayList<>();
+                    roots.add(rootModelTo);
+
                     technologyAndMaterials = null;
+                    technologiesOfRoot = new ArrayList<>();
                 }
                 case TECHNOLOGY, MATERIAL -> {
                     if (model.positionType == PositionType.TECHNOLOGY) {
                         technologyAndMaterials = new ArrayList<>();
-                        rootCodesTechnologiesAndMaterials
-                                .get(rootCodesTechnologiesAndMaterials.lastKey())
-                                .add(technologyAndMaterials);
+                        technologiesOfRoot.add(technologyAndMaterials);
                     }
                     if (technologyAndMaterials == null)
-                        throw new  IllegalArgumentException("Incorrect elements order");
+                        throw new IllegalArgumentException("Incorrect order of elements in source");
                     technologyAndMaterials.add(model);
                 }
             }
         }
-        rootCodesTechnologiesAndMaterials
-                .forEach((key, value) -> {
-                    RootModelTo rootModelTo = new RootModelTo();
-                    rootModelTo.rootCode = key;
-                    rootModelTo.techList = new ArrayList<>();
-                    roots.add(rootModelTo);
-                    value.forEach(rowModels -> rootModelTo.techList.add(toTechModel(rowModels)));
-                });
+        if (rootModelTo != null) {
+            for (List<RowModel> rowModels : technologiesOfRoot)
+                rootModelTo.techList.add(toTechModel(rowModels));
+        }
 
         return roots;
     }
