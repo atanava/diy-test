@@ -48,7 +48,7 @@ public class ViewModelsConverter {
             switch (model.positionType) {
                 case ROOT -> {
                     rootCodesTechnologiesAndMaterials.put(model.anyCode, new ArrayList<>());
-                    technologyAndMaterials = null; // это можно убрать, если мы доверяем проверку очередности методу toTechModel
+                    technologyAndMaterials = null;
                 }
                 case TECHNOLOGY, MATERIAL -> {
                     if (model.positionType == PositionType.TECHNOLOGY) {
@@ -57,7 +57,7 @@ public class ViewModelsConverter {
                                 .get(rootCodesTechnologiesAndMaterials.lastKey())
                                 .add(technologyAndMaterials);
                     }
-                    if (technologyAndMaterials == null) // и это можно убрать, если мы доверяем проверку очередности методу toTechModel
+                    if (technologyAndMaterials == null)
                         throw new  IllegalArgumentException("Incorrect elements order");
                     technologyAndMaterials.add(model);
                 }
