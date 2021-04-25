@@ -61,7 +61,10 @@ class ViewModelsConverterTest {
     }
 
     @Test
-    void toRootModelsWithWrongFirstElement() {
+    void toRootModelsWithWrongElementsOrder() {
         assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowTech2, rowMat1, rowMat2)));
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowRoot1, rowMat1, rowMat2)));
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowRoot1, rowTech1, rowTech2)));
+        assertThrows(IllegalArgumentException.class, () -> toRootModels(List.of(rowMat1, rowRoot1, rowTech1)));
     }
 }

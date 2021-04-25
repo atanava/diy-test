@@ -33,43 +33,51 @@ public class ViewModelsConverter {
     public static List<RootModelTo> toRootModels(List<RowModel> source) {
         List<RootModelTo> roots = new ArrayList<>();
 
-        if (source == null || source.isEmpty()) {
+        if (source == null) {
+            throw new IllegalArgumentException("Source must not be null");
+        } else if (source.isEmpty()) {
             throw new IllegalArgumentException("Source must not be empty");
-        } else if (!source.get(0).positionType.equals(PositionType.ROOT)) {
+        } else if (source.get(0).positionType != PositionType.ROOT) {
             throw new IllegalArgumentException("First element must be ROOT");
         }
 
-        convertToMap(source)
-                .forEach((key, value) -> {
-                    RootModelTo rootModelTo = new RootModelTo();
-                    rootModelTo.rootCode = key;
+        RootModelTo rootModelTo = null;
+        RowModel previous = null;
+        List<RowModel> techAndMats = null;
+
+        for (int i = 0; i < source.size(); i++) {
+            RowModel model = source.get(i);
+
+            switch (model.positionType) {
+                case ROOT -> {
+                    if (previous != null && (previous.positionType == PositionType.ROOT || previous.positionType == PositionType.TECHNOLOGY)) {
+                        throw new IllegalArgumentException("Incorrect order of elements in source");
+                    }
+                    rootModelTo = new RootModelTo();
+                    rootModelTo.rootCode = model.anyCode;
                     rootModelTo.techList = new ArrayList<>();
                     roots.add(rootModelTo);
-                    value.forEach(list -> rootModelTo.techList.add(toTechModel(list)));
-                });
-
-        return roots;
-    }
-
-
-    private static NavigableMap<String, Deque<List<RowModel>>> convertToMap(List<RowModel> source) {
-
-        NavigableMap<String, Deque<List<RowModel>>> roots = new TreeMap<>();
-        Deque<List<RowModel>> techs;
-
-        for (RowModel rowModel : source) {
-            if (rowModel.positionType.equals(PositionType.ROOT)) {
-                techs = new LinkedList<>();
-                roots.put(rowModel.anyCode, techs);
-
-            } else if (rowModel.positionType.equals(PositionType.TECHNOLOGY)) {
-                roots.get(roots.lastKey()).add(new LinkedList<>());
-                roots.get(roots.lastKey()).getLast().add(rowModel);
-
-            } else {
-                roots.get(roots.lastKey()).getLast().add(rowModel);
+                }
+                case TECHNOLOGY -> {
+                    if (previous == null || previous.positionType == PositionType.TECHNOLOGY) {
+                        throw new IllegalArgumentException("Incorrect order of elements in source");
+                    }
+                    techAndMats = new ArrayList<>();
+                    techAndMats.add(model);
+                }
+                case MATERIAL -> {
+                    if (previous == null || previous.positionType == PositionType.ROOT) {
+                        throw new IllegalArgumentException("Incorrect order of elements in source");
+                    }
+                    techAndMats.add(model);
+                    if (i == source.size() - 1 || source.get(i + 1).positionType != PositionType.MATERIAL) {
+                        rootModelTo.techList.add(toTechModel(techAndMats));
+                    }
+                }
             }
+            previous = model;
         }
+
         return roots;
     }
 }
