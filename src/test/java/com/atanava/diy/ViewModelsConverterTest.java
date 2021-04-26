@@ -56,7 +56,6 @@ class ViewModelsConverterTest {
 
     @Test
     void toRootModelsWithEmptyInput() {
-        assertThrows(IllegalArgumentException.class, () -> toRootModels(null));
         assertIterableEquals(Collections.emptyList(), toRootModels(Collections.emptyList()));
     }
 

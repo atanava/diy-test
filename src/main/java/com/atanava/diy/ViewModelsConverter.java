@@ -33,12 +33,8 @@ public class ViewModelsConverter {
     public static List<RootModelTo> toRootModels(List<RowModel> source) {
         List<RootModelTo> roots = new ArrayList<>();
 
-        if (source == null) {
-            throw new IllegalArgumentException("Source must not be null");
-        } else if (source.isEmpty()) {
+        if (source.isEmpty()) {
             return roots;
-        } else if (source.get(0).positionType != PositionType.ROOT) {
-            throw new IllegalArgumentException("First element must be ROOT");
         }
 
         RootModelTo rootModelTo = null;
@@ -49,8 +45,9 @@ public class ViewModelsConverter {
             switch (model.positionType) {
                 case ROOT -> {
                     if (rootModelTo != null) {
-                        for (List<RowModel> rowModels : technologiesOfRoot)
+                        for (List<RowModel> rowModels : technologiesOfRoot) {
                             rootModelTo.techList.add(toTechModel(rowModels));
+                        }
                     }
                     rootModelTo = new RootModelTo();
                     rootModelTo.rootCode = model.anyCode;
@@ -61,6 +58,8 @@ public class ViewModelsConverter {
                     technologiesOfRoot = new ArrayList<>();
                 }
                 case TECHNOLOGY, MATERIAL -> {
+                    if (source.get(0).positionType != PositionType.ROOT)
+                        throw new IllegalArgumentException("First element in source must be ROOT");
                     if (model.positionType == PositionType.TECHNOLOGY) {
                         technologyAndMaterials = new ArrayList<>();
                         technologiesOfRoot.add(technologyAndMaterials);
@@ -71,9 +70,8 @@ public class ViewModelsConverter {
                 }
             }
         }
-        if (rootModelTo != null) {
-            for (List<RowModel> rowModels : technologiesOfRoot)
-                rootModelTo.techList.add(toTechModel(rowModels));
+        for (List<RowModel> rowModels : technologiesOfRoot) {
+            rootModelTo.techList.add(toTechModel(rowModels));
         }
 
         return roots;
