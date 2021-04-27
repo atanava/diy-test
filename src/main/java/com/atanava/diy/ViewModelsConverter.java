@@ -38,41 +38,36 @@ public class ViewModelsConverter {
         }
 
         RootModelTo rootModelTo = null;
-        List<RowModel> technologyAndMaterials = null;
-        List<List<RowModel>> technologiesOfRoot = null;
+        List<RowModel> technologyAndMaterials = new ArrayList<>();
 
         for (RowModel model : source) {
             switch (model.positionType) {
                 case ROOT -> {
-                    if (rootModelTo != null) {
-                        for (List<RowModel> rowModels : technologiesOfRoot) {
-                            rootModelTo.techList.add(toTechModel(rowModels));
-                        }
+                    if (rootModelTo != null && technologyAndMaterials.size() > 0) {
+                        rootModelTo.techList.add(toTechModel(technologyAndMaterials));
+                        technologyAndMaterials = new ArrayList<>();
                     }
                     rootModelTo = new RootModelTo();
                     rootModelTo.rootCode = model.anyCode;
                     rootModelTo.techList = new ArrayList<>();
                     roots.add(rootModelTo);
-
-                    technologyAndMaterials = null;
-                    technologiesOfRoot = new ArrayList<>();
                 }
                 case TECHNOLOGY, MATERIAL -> {
-                    if (source.get(0).positionType != PositionType.ROOT)
+                    if (rootModelTo == null)
                         throw new IllegalArgumentException("First element in source must be ROOT");
                     if (model.positionType == PositionType.TECHNOLOGY) {
+                        if (technologyAndMaterials.size() > 0) {
+                            rootModelTo.techList.add(toTechModel(technologyAndMaterials));
+                        }
                         technologyAndMaterials = new ArrayList<>();
-                        technologiesOfRoot.add(technologyAndMaterials);
                     }
-                    if (technologyAndMaterials == null)
+                    if (technologyAndMaterials.isEmpty() && model.positionType == PositionType.MATERIAL)
                         throw new IllegalArgumentException("Incorrect order of elements in source");
                     technologyAndMaterials.add(model);
                 }
             }
         }
-        for (List<RowModel> rowModels : technologiesOfRoot) {
-            rootModelTo.techList.add(toTechModel(rowModels));
-        }
+        rootModelTo.techList.add(toTechModel(technologyAndMaterials));
 
         return roots;
     }
