@@ -58,8 +58,8 @@ public class ViewModelsConverter {
                     if (model.positionType == PositionType.TECHNOLOGY) {
                         if (technologyAndMaterials.size() > 0) {
                             rootModelTo.techList.add(toTechModel(technologyAndMaterials));
+                            technologyAndMaterials = new ArrayList<>();
                         }
-                        technologyAndMaterials = new ArrayList<>();
                     }
                     if (technologyAndMaterials.isEmpty() && model.positionType == PositionType.MATERIAL)
                         throw new IllegalArgumentException("Incorrect order of elements in source");
