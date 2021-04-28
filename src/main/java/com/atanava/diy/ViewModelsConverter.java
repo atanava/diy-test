@@ -55,13 +55,11 @@ public class ViewModelsConverter {
                 case TECHNOLOGY, MATERIAL -> {
                     if (rootModelTo == null)
                         throw new IllegalArgumentException("First element in source must be ROOT");
-                    if (model.positionType == PositionType.TECHNOLOGY) {
-                        if (technologyAndMaterials.size() > 0) {
-                            rootModelTo.techList.add(toTechModel(technologyAndMaterials));
-                            technologyAndMaterials = new ArrayList<>();
-                        }
+                    if (model.positionType == PositionType.TECHNOLOGY && technologyAndMaterials.size() > 0) {
+                        rootModelTo.techList.add(toTechModel(technologyAndMaterials));
+                        technologyAndMaterials = new ArrayList<>();
                     }
-                    if (technologyAndMaterials.isEmpty() && model.positionType == PositionType.MATERIAL)
+                    if (model.positionType == PositionType.MATERIAL && technologyAndMaterials.isEmpty())
                         throw new IllegalArgumentException("Incorrect order of elements in source");
                     technologyAndMaterials.add(model);
                 }
