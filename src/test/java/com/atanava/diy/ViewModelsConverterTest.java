@@ -35,8 +35,20 @@ class ViewModelsConverterTest {
 
     @Test
     void toRootModelsTest() {
-        List<RootModelTo> expected = getExpectedRootModels();
+        List<RootModelTo> expected = getExpectedRootModelTos();
         List<RootModelTo> actual = toRootModels(getToRootModelsInput());
+        loopAsserts(expected, actual);
+    }
+
+    @Test
+    void toRootModelsPartial() {
+        List<RootModelTo> expected = getExpectedPartialRootModelTos();
+        List<RootModelTo> actual = toRootModels(getToRootModelsPartialInput());
+        loopAsserts(expected, actual);
+    }
+
+    private void loopAsserts(List<RootModelTo> expected, List<RootModelTo> actual) {
+
         for (int i = 0; i < expected.size(); i++) {
             assertEquals(expected.get(i).rootCode, actual.get(i).rootCode);
             List<TechModelTo> expectedTechs = expected.get(i).techList;
